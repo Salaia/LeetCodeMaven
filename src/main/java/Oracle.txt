@@ -1,0 +1,104 @@
+https://ronekins.com/2023/10/24/how-to-to-run-oracle-database-23c-free-on-m1-m2-apple-mac/
+Мануал установки Oracle DB поверх Colima
+(т.к. ARM64-архитектура процесоора пока не дружит с Ораклом...)
+
+У разных БД разные ошибки на некорректные запросы.
+Общее одно: они не информативны.
+Oracle не хочет видеть AS в указании псевдонима таблицы (со столбцом вывода норм) -
+"SQL command not properly ended"
+и пофигу что ошибка в середине команды в середине запроса.
+Не буду разбираться, что не понравилось MySQL (запрос v2), но говорит он мне
+"Every derived table must have its own alias"
+...шо?..
+Тот же v2 запрос, PostgreSQL говорит
+"column "balance" does not exist
+ LINE 9: ) WHERE balance > 10000;
+                 ^                  "
+ну тут я хотя бы могу сообразить и проверить: кавычки ему не нравятся на псевдониме
+(притом если не используешь для условия, а только для вывода - кавычки можно)
+Возможно, дело привычки, но пока что я понимаю более-менее только ошибки Постгри...
+
+1587. Bank Account Summary II
+
+v1
+SELECT name,
+    SUM(amount) AS balance
+FROM Users u
+JOIN Transactions t
+ON u.account = t.account
+GROUP BY u.name
+HAVING SUM(amount)>10000;
+
+v2
+SELECT * FROM
+(   SELECT
+    u.name AS "NAME",
+    SUM(t.amount) AS "BALANCE"
+    FROM users u
+    NATURAL JOIN
+    transactions t
+    GROUP BY account, u.name
+) WHERE balance > 10000;
+
+*******************************************************
+
+Мануал: https://www.studytonight.com/plsql/plsql-block
+Взяла из темы на Reddit: https://www.reddit.com/r/SQL/comments/141aglu/what_are_some_resources_to_learn_plsql/?rdt=45687
+
+Читала все утро. Что поняла:
+Отличий между SQL (Postgre) и SQL (Oracle) ... не ну есть, наверное, но их прям на моем уровне
+днем с огнем искать. Да, Оракл не поддерживает стандарт, но с джуновской точки зрения запросы
+ну очень похожи на Постгрю.
+Прикол начинается в буквах PL. Потому что это процедурный язык.
+То есть на PL/SQL можно написать полноценную консольную программку - в сети вполне есть мануалы,
+по которым можно написать
+
+BEGIN
+   DBMS_OUTPUT.PUT_LINE('Hello World!');
+END;
+/
+
+или
+
+DECLARE
+    -- declare variable a and b
+    -- and these variables have integer datatype
+   a number;
+   b number;
+BEGIN
+   a:= 7;
+   b:= 77;
+   dbms_output.put_line('Sum of the number is: ' || a + b);
+END;
+/
+
+Что эти познания дают нам для нашего трудоустройства?
+Если тигренку удастся подцепить Оракл БД к программе,
+то мы сможем написать отдельный проект уровня FinanceAdviser
+со всей "логикой" на языке PL/SQL.
+Это будет галочка использования языка. Цеплять базу без использования языка смысла не вижу,
+уродовать пэт внедрением процедурного языка тоже не вижу смысла.
+Так что имхо, отдельный мин-пэт под эту галочку.
+
+
+// 197. Rising Temperature
+// Отличается от того, что написала я, но ранится одинаково и на Oracle, и на PostgreSQL
+
+SELECT current_day.id
+FROM Weather current_day
+WHERE EXISTS (
+    SELECT 1
+    FROM Weather yesterday
+    WHERE current_day.temperature > yesterday.temperature
+    AND current_day.recordDate = yesterday.recordDate + 1
+);
+
+// 175. Combine two tables
+// Отличий от PostgreSQL не вижу... надо либо что-то более сложное, либо читать
+
+SELECT p.firstName,
+       p.lastName,
+       a.city,
+       a.state
+from Person p left outer join Address a
+on p.personId=a.personId;
