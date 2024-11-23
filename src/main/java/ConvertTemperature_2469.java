@@ -1,5 +1,7 @@
 public class ConvertTemperature_2469 {
 
+    final static int MAX = 9;
+
     public double[] convertTemperature(double celsius) {
         double[] result = new double[2];
         result[0] = celsius + 273.15;
