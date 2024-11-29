@@ -1,3 +1,12 @@
+// 1667. Fix names in table
+// как вариант в решениях предлагают через substring: он умеет "от индекса до индекса" и просто "от"
+// т.е. получается substring(name, 1, 1) и substring(name, 2)
+// выглядит покороче и на один вызов меньше (не надо запрашивать отдельно длину строки)
+SELECT user_id, CONCAT(UPPER(LEFT(name,1)),LOWER(RIGHT(name, LENGTH(name)-1))) AS name
+FROM Users
+ORDER BY user_id
+;
+
 // 1795. Rearrange products table
 --- UNNEST ---
 https://www.w3resource.com/PostgreSQL/postgresql_unnest-function.php
