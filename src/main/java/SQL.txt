@@ -1,3 +1,28 @@
+// 626. Exchange seats
+// моя версия
+SELECT CASE
+    WHEN (id%2) = 0 THEN (id-1)
+    WHEN (id%2) != 0 AND id !=(SELECT MAX(id)
+        FROM Seat) THEN (id+1)
+    ELSE id
+    END AS id,
+    student
+FROM Seat
+GROUP BY id, student
+ORDER BY id
+;
+
+// solution. row_number() over считает строки,
+// внутри идет сортировка по измененным id
+// последний нечетный id тоже меняется (при 5 элементах не будет id 5, там будут 4 и 6)
+// но выводится-то счетчик, а не id.  Так что выведется "правильный" порядок и без ошибки последнего номера
+SELECT
+    ROW_NUMBER() OVER(
+        ORDER BY
+        (CASE WHEN id % 2 = 0 THEN id - 1 ELSE id + 1 END)
+    ) AS id, student
+FROM Seat
+
 // 1729. Find Followers Count
 SELECT user_id, COUNT(follower_id) AS followers_count
 FROM Followers
