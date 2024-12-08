@@ -1,3 +1,16 @@
+// 608. Tree Node
+SELECT t.id,
+    CASE
+    WHEN t.p_id IS NULL THEN 'Root'
+    WHEN t.p_id IS NOT NULL AND t.id IN (
+        SELECT sub.p_id
+        FROM Tree sub
+    ) THEN 'Inner'
+    ELSE 'Leaf'
+    END AS type
+FROM Tree t
+;
+
 // 626. Exchange seats
 // моя версия
 SELECT CASE
