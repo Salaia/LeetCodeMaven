@@ -1,3 +1,14 @@
+// 1633. Percentage of users attended a contest
+SELECT r.contest_id,
+    ROUND(100.00 * COUNT(u.user_id) /
+    (SELECT COUNT(*) FROM Users u1)
+    , 2) AS percentage
+FROM Users u
+JOIN Register r ON u.user_id=r.user_id
+GROUP BY r.contest_id
+ORDER BY percentage DESC, r.contest_id ASC
+;
+
 // 3220. Odd and even transactions
 SELECT transaction_date,
     SUM(CASE
